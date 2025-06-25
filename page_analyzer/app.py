@@ -14,4 +14,4 @@ def index():
     """
     Root route handler    
     """
-    pass
+
