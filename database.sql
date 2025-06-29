@@ -1,0 +1,17 @@
+CREATE SCHEMA pa;
+
+CREATE TABLE pa.urls (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(500) NOT NULL UNIQUE,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE pa.url_checks (
+    id SERIAL PRIMARY KEY,
+    url_id INTEGER NOT NULL REFERENCES pa.urls(id),
+    resp_code INTEGER NOT NULL,
+    h1 TEXT,
+    title TEXT,
+    description TEXT,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
