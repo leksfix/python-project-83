@@ -1,4 +1,5 @@
 import os
+
 import psycopg
 from dotenv import load_dotenv
 from psycopg.rows import dict_row
@@ -32,6 +33,7 @@ SELECT u.id, u.name, u.created_at::date,
   l.last_check_resp, l.last_check_date::date
 FROM pa.urls u
 LEFT JOIN last_check l ON l.url_id = u.id
+ORDER BY u.created_at DESC
                         """)
             return [dict(row) for row in cur]
 

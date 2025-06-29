@@ -2,17 +2,21 @@
 page_analyzer application
 """
 
+import os
+from urllib.parse import urlparse
+
+from flask import (
+    Flask,
+    flash,
+    get_flashed_messages,
+    redirect,
+    render_template,
+    request,
+    url_for,
+)
+
 from page_analyzer.repository import SitesRepository
 from page_analyzer.validator import validate
-from flask import (
-    Flask, flash, get_flashed_messages,
-    redirect, request, render_template,
-    url_for
-)
-from urllib.parse import urlparse
-import os
-
-
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
@@ -37,9 +41,9 @@ def index():
 
 @app.post('/check_url')
 def check_url():
-    name = request.form.to_dict()["url"]    
+    name = request.form.to_dict()["url"]
     valres = validate(name)
-    if not valres == True:
+    if valres is not True:
         flash(valres, "error")
         return redirect(url_for("index"), 302)
     name = normalize_url(name)
@@ -66,7 +70,8 @@ def show_url(id):
     if not site:
         return "Page not found", 404
     checks = repo.list_checks(id)
-    return render_template("site.html", messages=messages, site=site, checks=checks)
+    return render_template("site.html", messages=messages, site=site, 
+                           checks=checks)
 
 
 @app.post('/run_check/<int:id>')

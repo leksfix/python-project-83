@@ -1,5 +1,6 @@
 import validators
 
+
 def validate(name):
     if not name:
         return "Can't be blank"
