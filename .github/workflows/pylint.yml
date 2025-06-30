@@ -7,7 +7,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: ["3.8", "3.9", "3.10", "3.13"]
+        python-version: ["3.13"]
     steps:
     - uses: actions/checkout@v4
     - name: Set up Python ${{ matrix.python-version }}
@@ -16,12 +16,8 @@ jobs:
         python-version: ${{ matrix.python-version }}
     - name: Install dependencies
       run: |
-        python -m pip install --upgrade pip
-        pip install pylint
-        pip install flask
-        pip install psycopg
-        pip install validators
-        pip install dotenv
-    - name: Analysing the code with pylint
+       pip install uv
+       make install
+    - name: Lint with ruff
       run: |
-        pylint $(git ls-files '*.py')
+        make lint
