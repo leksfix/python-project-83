@@ -72,23 +72,24 @@ def urls_list():
     return render_template("sites.html", sites=sites)
 
 
-@app.get('/urls/<int:id>')
-def show_url(id):
+@app.get('/urls/<int:url_id>')
+def show_url(url_id):
     """
     Handler for site details page
     """
     messages = get_flashed_messages(with_categories=True)
-    site = repo.get_by_id(id)
+    site = repo.get_by_id(url_id)
     if not site:
         return "Page not found", 404
-    checks = repo.list_checks(id)
-    return render_template("site.html", messages=messages, site=site, 
+    checks = repo.list_checks(url_id)
+    return render_template("site.html", messages=messages, site=site,
                            checks=checks)
 
 
-@app.post('/run_check/<int:id>')
-def run_check(id):
+@app.post('/run_check/<int:url_id>')
+def run_check(url_id):
     """
     Handler for site check run
     """
-    pass
+    print(f"run_check id:{url_id}")
+
