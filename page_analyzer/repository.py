@@ -50,6 +50,7 @@ FROM pa.urls u
 LEFT JOIN last_check l ON l.url_id = u.id
 ORDER BY u.created_at DESC
                         """)
+            self.conn.commit()
             return [dict(row) for row in cur]
 
     def list_checks(self, url_id):
@@ -64,6 +65,7 @@ ORDER BY u.created_at DESC
                         WHERE c.url_id = %s
                         ORDER BY created_at DESC
                         """, (url_id,))
+            self.conn.commit()
             return [dict(row) for row in cur]
 
     def find(self, name):
@@ -74,6 +76,7 @@ ORDER BY u.created_at DESC
         with self.conn.cursor(row_factory=dict_row) as cur:
             cur.execute("SELECT * FROM pa.urls WHERE name = %s", (name,))
             row = cur.fetchone()
+            self.conn.commit()
             return dict(row) if row else None
 
     def get_by_id(self, url_id):
@@ -85,6 +88,7 @@ ORDER BY u.created_at DESC
             cur.execute("""SELECT u.id, u.name, u.created_at::date
             FROM pa.urls u WHERE id = %s""", (url_id,))
             row = cur.fetchone()
+            self.conn.commit()
             return dict(row) if row else None
 
     def save(self, site):
