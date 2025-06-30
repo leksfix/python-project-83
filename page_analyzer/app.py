@@ -28,8 +28,7 @@ def index():
     """
     Root route handler
     """
-    messages = get_flashed_messages(with_categories=True)
-    return render_template('index.html', messages=messages)
+    return render_template('index.html')
 
 
 @app.post('/check_url')
@@ -67,8 +66,6 @@ def show_url(url_id):
     """
     Handler for site details page
     """
-    messages = get_flashed_messages(with_categories=True)
-
     site = repo.get_by_id(url_id)
     if not site:
         return "Page not found", 404
@@ -76,7 +73,6 @@ def show_url(url_id):
     checks = repo.get_checks(url_id)
     return render_template(
         "site.html",
-        messages=messages,
         site=site,
         checks=checks,
     )
