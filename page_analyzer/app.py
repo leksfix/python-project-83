@@ -24,6 +24,9 @@ repo = SitesRepository()
 
 
 def normalize_url(url):
+    """
+    URL normalize
+    """
     if not url:
         return None
     res = urlparse(url)
@@ -41,6 +44,9 @@ def index():
 
 @app.post('/check_url')
 def check_url():
+    """
+    Handler for site registration
+    """
     name = request.form.to_dict()["url"]
     valres = validate(name)
     if valres is not True:
@@ -59,12 +65,18 @@ def check_url():
 
 @app.get('/urls')
 def urls_list():
+    """
+    Handler for URL list page
+    """
     sites = repo.list_sites()
     return render_template("sites.html", sites=sites)
 
 
 @app.get('/urls/<int:id>')
 def show_url(id):
+    """
+    Handler for site details page
+    """
     messages = get_flashed_messages(with_categories=True)
     site = repo.get_by_id(id)
     if not site:
@@ -76,4 +88,7 @@ def show_url(id):
 
 @app.post('/run_check/<int:id>')
 def run_check(id):
+    """
+    Handler for site check run
+    """
     pass

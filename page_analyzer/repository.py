@@ -1,3 +1,7 @@
+"""
+DB functions
+"""
+
 import os
 
 import psycopg
