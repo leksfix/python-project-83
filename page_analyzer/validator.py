@@ -11,9 +11,9 @@ def validate(name):
     or error message if not OK
     """
     if not name:
-        return "Can't be blank"
+        return False, "Can't be blank"
     if len(name) > 255:
-        return "URL too long"
+        return False, "URL too long"
     if not validators.url(name):
-        return "Incorrect URL"
-    return True
+        return False, "Incorrect URL"
+    return True, None

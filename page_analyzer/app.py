@@ -3,7 +3,6 @@ page_analyzer application
 """
 
 import os
-from urllib.parse import urlparse
 
 from flask import (
     Flask,
@@ -16,21 +15,12 @@ from flask import (
 )
 
 from page_analyzer.repository import SitesRepository
+from page_analyzer.utils import normalize_url
 from page_analyzer.validator import validate
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
 repo = SitesRepository()
-
-
-def normalize_url(url):
-    """
-    URL normalize
-    """
-    if not url:
-        return None
-    res = urlparse(url)
-    return f"{res.scheme}://{res.netloc}"
 
 
 @app.get('/')
@@ -47,18 +37,19 @@ def check_url():
     """
     Handler for site registration
     """
-    name = request.form.to_dict()["url"]
-    valres = validate(name)
-    if valres is not True:
-        flash(valres, "error")
+    url = request.form.to_dict()["url"]
+
+    is_valid, err_msg = validate(url)
+    if not is_valid:
+        flash(err_msg, "error")
         return redirect(url_for("index"), 302)
-    name = normalize_url(name)
-    site = repo.find(name)
+
+    url = normalize_url(url)
+    site = repo.find(url)
     if site:
         flash("Site already exists", "warning")
     else:
-        site = {"name": name}
-        repo.save_site(site)
+        site = repo.add_site(url)
         flash("Site added", "success")
     return redirect(url_for("show_url", url_id=site["id"]))
 
@@ -68,8 +59,7 @@ def urls_list():
     """
     Handler for URL list page
     """
-    sites = repo.list_sites()
-    return render_template("sites.html", sites=sites)
+    return render_template("sites.html", sites=repo.get_sites())
 
 
 @app.get('/urls/<int:url_id>')
@@ -78,12 +68,18 @@ def show_url(url_id):
     Handler for site details page
     """
     messages = get_flashed_messages(with_categories=True)
+
     site = repo.get_by_id(url_id)
     if not site:
         return "Page not found", 404
-    checks = repo.list_checks(url_id)
-    return render_template("site.html", messages=messages, site=site,
-                           checks=checks)
+
+    checks = repo.get_checks(url_id)
+    return render_template(
+        "site.html",
+        messages=messages,
+        site=site,
+        checks=checks,
+    )
 
 
 @app.post('/urls/<int:url_id>/checks')
@@ -91,8 +87,5 @@ def run_check(url_id):
     """
     Handler for site check run
     """
-    check = {'url_id': url_id, 'status_code': 666}
-    repo.save_check(check)
+    repo.add_check(url_id, 666, 'h123', 'title 12345', 'desc 12345')
     return redirect(url_for("show_url", url_id=url_id))
-    
-
