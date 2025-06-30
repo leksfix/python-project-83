@@ -21,7 +21,7 @@ class SitesRepository:
         SitesRepository initialization
         Created DB connection
         """
-        self.conn = psycopg.connect(DATABASE_URL)
+        self.conn = psycopg.connect(DATABASE_URL, sslmode="disable")
 
     def list_sites(self):
         """

@@ -60,7 +60,7 @@ def check_url():
         site = {"name": name}
         repo.save(site)
         flash("Site added", "success")
-    return redirect(url_for("show_url", id=site["id"]))
+    return redirect(url_for("show_url", url_id=site["id"]))
 
 
 @app.get('/urls')
