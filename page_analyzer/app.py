@@ -58,7 +58,7 @@ def check_url():
         flash("Site already exists", "warning")
     else:
         site = {"name": name}
-        repo.save(site)
+        repo.save_site(site)
         flash("Site added", "success")
     return redirect(url_for("show_url", url_id=site["id"]))
 
@@ -86,10 +86,13 @@ def show_url(url_id):
                            checks=checks)
 
 
-@app.post('/run_check/<int:url_id>')
+@app.post('/urls/<int:url_id>/checks')
 def run_check(url_id):
     """
     Handler for site check run
     """
-    print(f"run_check id:{url_id}")
+    check = {'url_id': url_id, 'status_code': 666}
+    repo.save_check(check)
+    return redirect(url_for("show_url", url_id=url_id))
+    
 

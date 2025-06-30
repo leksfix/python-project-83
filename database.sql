@@ -9,8 +9,8 @@ CREATE TABLE pa.urls (
 CREATE TABLE pa.url_checks (
     id SERIAL PRIMARY KEY,
     url_id INTEGER NOT NULL REFERENCES pa.urls(id),
-    resp_code INTEGER NOT NULL,
-    h1 TEXT,
+    status_code INTEGER NOT NULL,
+    h1 BOOLEAN,
     title TEXT,
     description TEXT,
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP

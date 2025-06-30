@@ -31,11 +31,11 @@ class SitesRepository:
         with self.conn.cursor(row_factory=dict_row) as cur:
             cur.execute("""
 WITH last_check AS (
-  SELECT url_id, last_check_resp, last_check_date
+  SELECT url_id, last_check_status, last_check_date
   FROM
   (
     SELECT c.url_id, 
-      FIRST_VALUE(c.resp_code) OVER w as last_check_resp,
+      FIRST_VALUE(c.status_code) OVER w as last_check_status,
       FIRST_VALUE(c.created_at) OVER w as last_check_date,
       ROW_NUMBER() OVER w as rn
     FROM pa.url_checks c
@@ -45,7 +45,7 @@ WITH last_check AS (
   ) l WHERE rn = 1
 )
 SELECT u.id, u.name, u.created_at::date, 
-  l.last_check_resp, l.last_check_date::date
+  l.last_check_status, l.last_check_date::date
 FROM pa.urls u
 LEFT JOIN last_check l ON l.url_id = u.id
 ORDER BY u.created_at DESC
@@ -59,11 +59,11 @@ ORDER BY u.created_at DESC
         Last added goes first
         """
         with self.conn.cursor(row_factory=dict_row) as cur:
-            cur.execute("""SELECT c.id, c.resp_code, c.h1, c.title,
+            cur.execute("""SELECT c.id, c.status_code, c.h1, c.title,
                             c.description, c.created_at::date
                         FROM pa.url_checks c 
                         WHERE c.url_id = %s
-                        ORDER BY created_at DESC
+                        ORDER BY c.created_at DESC
                         """, (url_id,))
             self.conn.commit()
             return [dict(row) for row in cur]
@@ -91,7 +91,7 @@ ORDER BY u.created_at DESC
             self.conn.commit()
             return dict(row) if row else None
 
-    def save(self, site):
+    def save_site(self, site):
         """
         Adds new site
         returns site.id
@@ -106,4 +106,25 @@ ORDER BY u.created_at DESC
                 row = cur.fetchone()
                 site['id'] = row[0]
                 site['created_at'] = row[1]
+            self.conn.commit()
+
+    def save_check(self, check):
+        """
+        Adds new site check
+        returns check.id
+        """
+        if 'id' not in check or not check['id']:
+            with self.conn.cursor() as cur:
+                cur.execute(
+                    """INSERT INTO pa.url_checks
+                    (url_id, status_code, h1, title, description) 
+                    VALUES(%s, %s, %s, %s, %s)
+                    RETURNING id, created_at""",
+                    (check.get('url_id'), check.get('status_code'), check.get('h1'),
+                     check.get('title'), check.get('description')
+                     )
+                )
+                row = cur.fetchone()
+                check['id'] = row[0]
+                check['created_at'] = row[1]
             self.conn.commit()

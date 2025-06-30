@@ -24,7 +24,7 @@
       <form action="{{ url_for('run_check', url_id=site.id) }}" method="post">
         <button type="submit">Запустить проверку</button>
       </form>
-      <table>
+      <table data-test="checks">
         <thead>
           <h2>
             <tr>
@@ -41,11 +41,11 @@
           {% for check in checks %}
           <tr>
             <td>{{ check.id }}</td>
-            <td>{{ check.resp_code }}</td>
-            <td>{{ check.h1 }}</td>
-            <td>{{ check.title }}</td>
-            <td>{{ check.description }}</td>
-            <td>{{ check.created_at }}</td>
+            <td>{{ check.status_code }}</td>
+            <td>{{ check.h1 if check.h1 else '' }}</td>
+            <td>{{ check.title if check.title else '' }}</td>
+            <td>{{ check.description if check.description else '' }}</td>
+            <td>{{ check.created_at if check.created_at else '' }}</td>
           </tr>
           {% endfor %}
         </tbody>
