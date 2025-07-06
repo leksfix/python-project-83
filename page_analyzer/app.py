@@ -14,7 +14,7 @@ from flask import (
 )
 
 from page_analyzer.repository import SitesRepository
-from page_analyzer.utils import get_status_code, normalize_url
+from page_analyzer.utils import get_site_data, normalize_url
 from page_analyzer.validator import validate
 
 app = Flask(__name__)
@@ -83,9 +83,15 @@ def run_check(url_id):
     Handler for site check run
     """
     site = repo.get_by_id(url_id)
-    code = get_status_code(site['name'])
-    if not code:
+    res = get_site_data(site['name'])
+    if not res:
         flash("Произошла ошибка при проверке", "error")
     else:
-        repo.add_check(url_id, code, 'h123', 'title 12345', 'desc 12345')
+        repo.add_check(
+            url_id,
+            res["status_code"],
+            res["h1"],
+            res["title"],
+            res["description"]
+        )
     return redirect(url_for("show_url", url_id=url_id))
