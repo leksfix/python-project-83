@@ -4,9 +4,9 @@ DB functions
 
 import os
 
-import psycopg
+import psycopg2
 from dotenv import load_dotenv
-from psycopg.rows import dict_row
+from psycopg2.extras import RealDictCursor
 
 load_dotenv()
 DATABASE_URL = os.getenv('DATABASE_URL')
@@ -21,14 +21,14 @@ class SitesRepository:
         SitesRepository initialization
         Created DB connection
         """
-        self.conn = psycopg.connect(DATABASE_URL, sslmode="disable")
+        self.conn = psycopg2.connect(DATABASE_URL, sslmode="disable")
 
     def get_sites(self):
         """
         Returns list of sites
         Last added goes first
         """
-        with self.conn.cursor(row_factory=dict_row) as cur:
+        with self.conn.cursor(cursor_factory=RealDictCursor) as cur:
             cur.execute("""
                 WITH last_check AS (
                 SELECT url_id, last_check_status, last_check_date
@@ -58,7 +58,7 @@ class SitesRepository:
         Returns list of checks for url_id
         Last added goes first
         """
-        with self.conn.cursor(row_factory=dict_row) as cur:
+        with self.conn.cursor(cursor_factory=RealDictCursor) as cur:
             cur.execute("""SELECT c.id, c.status_code, c.h1, c.title,
                             c.description, c.created_at::date
                         FROM pa.url_checks c 
@@ -73,7 +73,7 @@ class SitesRepository:
         Returns site by it's URL (name)
         None if not found
         """
-        with self.conn.cursor(row_factory=dict_row) as cur:
+        with self.conn.cursor(cursor_factory=RealDictCursor) as cur:
             cur.execute("SELECT * FROM pa.urls WHERE name = %s", (name,))
             row = cur.fetchone()
 
@@ -84,7 +84,7 @@ class SitesRepository:
         Returns site by it's ID
         None if not found
         """
-        with self.conn.cursor(row_factory=dict_row) as cur:
+        with self.conn.cursor(cursor_factory=RealDictCursor) as cur:
             cur.execute("""SELECT u.id, u.name, u.created_at::date
             FROM pa.urls u WHERE id = %s""", (url_id,))
             row = cur.fetchone()
