@@ -19,8 +19,8 @@
             <tr>
                 <td>{{ site.id }}</td>
                 <td><a href="{{ url_for ('show_url', url_id=site.id) }}">{{ site.name }}</a></td>
-                <td>{{ site.last_check_date if site.last_check_date else '-' }}</td>
-                <td>{{ site.last_check_status if site.last_check_status else '-' }}</td>
+                <td>{{ site.last_check_date if site.last_check_date else '' }}</td>
+                <td>{{ site.last_check_status if site.last_check_status else '' }}</td>
             </tr>
             {% endfor %}
         </tbody>

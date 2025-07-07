@@ -50,7 +50,8 @@ class SitesRepository:
                 LEFT JOIN last_check l ON l.url_id = u.id
                 ORDER BY u.created_at DESC
             """)
-
+            self.conn.commit()
+            
             return [dict(row) for row in cur]
 
     def get_checks(self, url_id):
