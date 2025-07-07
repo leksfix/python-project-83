@@ -48,7 +48,7 @@ def check_url():
         flash("Site already exists", "warning")
     else:
         site = repo.add_site(url)
-        flash("Site added", "success")
+        flash("Страница успешно добавлена", "success")
     return redirect(url_for("show_url", url_id=site["id"]))
 
 
