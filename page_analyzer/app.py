@@ -45,7 +45,7 @@ def check_url():
     url = normalize_url(url)
     site = repo.find(url)
     if site:
-        flash("Site already exists", "warning")
+        flash("Страница уже существует", "warning")
     else:
         site = repo.add_site(url)
         flash("Страница успешно добавлена", "success")
@@ -94,4 +94,5 @@ def run_check(url_id):
             res["title"],
             res["description"]
         )
+        flash("Страница успешно проверена", "success")
     return redirect(url_for("show_url", url_id=url_id))
