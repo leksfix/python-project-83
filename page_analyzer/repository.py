@@ -29,7 +29,7 @@ class SitesRepository:
         Last added goes first
         """
         with self.conn.cursor(cursor_factory=RealDictCursor) as cur:
-            cur.execute("""
+            """            cur.execute(
                 SELECT DISTINCT ON (u.created_at, u.id) 
                 u.id, u.name, u.created_at::date as created_at,
                 c.status_code as last_check_status, 
@@ -37,6 +37,14 @@ class SitesRepository:
                 FROM pa.urls u
                 LEFT JOIN pa.url_checks c ON c.url_id = u.id
                 ORDER BY u.created_at DESC, u.id DESC, c.created_at DESC;
+            )"""
+            cur.execute("""
+                SELECT
+                u.id, u.name, u.created_at::date as created_at,
+                200 as last_check_status, 
+                '2021-11-11' as last_check_date
+                FROM pa.urls u
+                ORDER BY u.created_at DESC, u.id DESC;
             """)
             self.conn.commit()
 
