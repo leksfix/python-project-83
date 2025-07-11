@@ -30,28 +30,16 @@ class SitesRepository:
         """
         with self.conn.cursor(cursor_factory=RealDictCursor) as cur:
             cur.execute("""
-                WITH last_check AS (
-                SELECT url_id, last_check_status, last_check_date
-                FROM
-                (
-                    SELECT c.url_id, 
-                    FIRST_VALUE(c.status_code) OVER w as last_check_status,
-                    FIRST_VALUE(c.created_at) OVER w as last_check_date,
-                    ROW_NUMBER() OVER w as rn
-                    FROM pa.url_checks c
-                    WINDOW w AS (
-                    PARTITION BY c.url_id ORDER BY c.created_at DESC
-                    )    
-                ) l WHERE rn = 1
-                )
-                SELECT u.id, u.name, u.created_at::date, 
-                l.last_check_status, l.last_check_date::date
+                SELECT DISTINCT ON (u.created_at, u.id) 
+                u.id, u.name, u.created_at::date as created_at,
+                c.status_code as last_check_status, 
+                c.created_at::date as last_check_date
                 FROM pa.urls u
-                LEFT JOIN last_check l ON l.url_id = u.id
-                ORDER BY u.created_at DESC
+                LEFT JOIN pa.url_checks c ON c.url_id = u.id
+                ORDER BY u.created_at DESC, u.id DESC, c.created_at DESC;
             """)
             self.conn.commit()
-            
+
             return [dict(row) for row in cur]
 
     def get_checks(self, url_id):
@@ -78,7 +66,7 @@ class SitesRepository:
             cur.execute("SELECT * FROM pa.urls WHERE name = %s", (name,))
             row = cur.fetchone()
 
-            return dict(row) if row else None
+        return dict(row) if row else None
 
     def get_by_id(self, url_id):
         """
@@ -90,7 +78,7 @@ class SitesRepository:
             FROM pa.urls u WHERE id = %s""", (url_id,))
             row = cur.fetchone()
 
-            return dict(row) if row else None
+        return dict(row) if row else None
 
     def add_site(self, url):
         """
@@ -105,6 +93,7 @@ class SitesRepository:
             )
             row = cur.fetchone()
             self.conn.commit()
+
         return {"id": row[0], "name": url, "created_at": row[1]}
 
     def add_check(self, url_id, status_code, h1, title, description):
@@ -122,6 +111,12 @@ class SitesRepository:
             )
             row = cur.fetchone()
             self.conn.commit()
-        return {"id": row[0], "url_id": url_id, "status_code": status_code,
-                "h1": h1, "title": title, "description": description
+
+        return {
+            "id": row[0],
+            "url_id": url_id,
+            "status_code": status_code,
+            "h1": h1,
+            "title": title,
+            "description": description,
         }

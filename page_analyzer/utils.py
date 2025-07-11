@@ -11,8 +11,6 @@ def normalize_url(url):
     """
     URL normalize
     """
-    if not url:
-        return None
     res = urlparse(url)
     return f"{res.scheme}://{res.netloc}"
 
@@ -26,19 +24,22 @@ def get_site_data(url):
     try:
         resp = requests.get(url)
         resp.raise_for_status()
-        page_text = resp.text
-        soup = BeautifulSoup(page_text, 'html.parser')
-        meta_tags = soup.find_all('meta')
-        description = None
-        for tag in meta_tags:
-            if tag.get("name") == "description":
-                description = tag.get("content")
-                break
-        return {
-            "status_code": resp.status_code,
-            "h1": soup.h1.text if soup.h1 else None,
-            "title": soup.title.string if soup.title else None,
-            "description": description
-        }
     except requests.exceptions.RequestException:
         return None
+    
+    page_text = resp.text
+    soup = BeautifulSoup(page_text, 'html.parser')
+    meta_tags = soup.find_all('meta')
+    
+    description = None
+    for tag in meta_tags:
+        if tag.get("name") == "description":
+            description = tag.get("content")
+            break
+
+    return {
+        "status_code": resp.status_code,
+        "h1": soup.h1.text if soup.h1 else None,
+        "title": soup.title.string if soup.title else None,
+        "description": description
+    }
