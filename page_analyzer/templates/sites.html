@@ -1,0 +1,29 @@
+{% extends "layout.html" %}
+
+{% block maincontent %} 
+    <div>
+      <h1>Сайты</h1>
+      <table class="table table-bordered table-hover text-nowrap" data-test="urls">
+        <thead>
+            <h2>
+                <tr>
+                    <th>ID</th>
+                    <th>Имя</th>
+                    <th>Последняя проверка</th>
+                    <th>Код ответа</th>
+                </tr>
+            </h2>
+        </thead>
+        <tbody>
+            {% for site in sites %}
+            <tr>
+                <td>{{ site.id }}</td>
+                <td><a href="{{ url_for ('show_url', url_id=site.id) }}">{{ site.name }}</a></td>
+                <td>{{ site.last_check_date if site.last_check_date else '' }}</td>
+                <td>{{ site.last_check_status if site.last_check_status else '' }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+      </table>
+    </div>
+{% endblock %}

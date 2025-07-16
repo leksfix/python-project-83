@@ -1,0 +1,13 @@
+{% extends "layout.html" %}
+
+{% block maincontent %} 
+    <div>
+      <h1>Анализатор страниц</h1>
+      <p>Бесплатно проверяйте сайты на SEO-пригодность</p>
+      <form action="{{ url_for('check_url') }}" method="post">
+        <label for="url">URL:</label>
+        <input type="text" id="url" name="url" placeholder="hhtps://example.com">
+        <input type="submit" value="ПРОВЕРИТЬ"></input>
+      </form>
+    </div>
+{% endblock %}
