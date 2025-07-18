@@ -40,7 +40,7 @@ def check_url():
     is_valid, err_msg = validate(url)
     if not is_valid:
         flash(err_msg, "error")
-        return redirect(url_for("index"), 302)
+        return redirect(url_for("urls_list"), 302)
 
     url = normalize_url(url)
     site = repo.find(url)
