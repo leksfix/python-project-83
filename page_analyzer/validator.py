@@ -15,5 +15,5 @@ def validate(name):
     if len(name) > 255:
         return False, "URL too long"
     if not validators.url(name):
-        return False, "Incorrect URL"
+        return False, "Некорректный URL"
     return True, None
