@@ -68,16 +68,6 @@ class SitesRepository:
                 LEFT JOIN pa.url_checks c ON c.url_id = u.id
                 ORDER BY u.created_at DESC, u.id DESC, c.created_at DESC;"""
             )
-            """
-            cur.execute(
-                SELECT
-                u.id, u.name, u.created_at::date as created_at,
-                200 as last_check_status, 
-                '2021-11-11' as last_check_date
-                FROM pa.urls u
-                ORDER BY u.created_at DESC, u.id DESC;
-            )
-            """
 
             return [dict(row) for row in cur]
 
