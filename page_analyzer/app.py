@@ -30,7 +30,7 @@ def index():
     return render_template('index.html')
 
 
-@app.post('/check_url')
+@app.post('/urls')
 def check_url():
     """
     Handler for site registration
@@ -40,7 +40,7 @@ def check_url():
     is_valid, err_msg = validate(url)
     if not is_valid:
         flash(err_msg, "error")
-        return redirect(url_for("urls_list"), 302)
+        return render_template('index.html'), 422
 
     url = normalize_url(url)
     site = repo.find(url)
