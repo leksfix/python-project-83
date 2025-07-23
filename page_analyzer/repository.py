@@ -36,10 +36,12 @@ class GetCursor:
         """
         Performs commit and closes cursor and DB connection
         """
+        if exc_type is not None:
+            print(f"Exception {exc_type}: {exc_value}")
         self.conn.commit()
         self.cursor.close()
         self.conn.close()
-        return False
+        return False  # Raise exception furter
 
 
 class SitesRepository:
@@ -49,9 +51,7 @@ class SitesRepository:
     def __init__(self):
         """
         SitesRepository initialization
-        Created DB connection
         """
-        self.conn = psycopg2.connect(DATABASE_URL, sslmode="disable")
 
     def get_sites(self):
         """
